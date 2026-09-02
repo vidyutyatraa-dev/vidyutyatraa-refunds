@@ -1,0 +1,1607 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta
+ name="viewport"
+ content="width=device-width, initial-scale=1.0">
+
+<title>Refund Management</title>
+
+<style>
+
+/* =========================================================
+   BASE THEME
+   Matches charger-status.html
+   ========================================================= */
+
+body {
+    margin: 0;
+    font-family: 'Segoe UI', sans-serif;
+    background:
+        radial-gradient(
+            circle at top,
+            #064e3b,
+            #020617
+        );
+    color: #e2e8f0;
+    min-height: 100vh;
+}
+
+/* =========================================================
+   MAIN CONTAINER
+   ========================================================= */
+
+.container {
+
+    width: calc(100% - 40px);
+    max-width: 1500px;
+
+    margin: auto;
+
+    padding:
+        10px 20px 30px;
+
+    box-sizing: border-box;
+}
+
+/* =========================================================
+   LOGO
+   ========================================================= */
+
+.logo {
+
+    width: 160px;
+
+    margin:
+        10px auto 20px;
+
+    display: block;
+}
+
+/* =========================================================
+   NAVIGATION
+   ========================================================= */
+
+.nav-btn {
+
+    width: 100%;
+
+    padding: 10px;
+
+    border: none;
+
+    border-radius: 10px;
+
+    font-size: 14px;
+
+    cursor: pointer;
+
+    margin-bottom: 12px;
+
+    background: #334155;
+
+    color: white;
+}
+
+.nav-btn:hover {
+    background: #475569;
+}
+
+/* =========================================================
+   CARD
+   ========================================================= */
+
+.card {
+
+    background: #1e293b;
+
+    border-radius: 16px;
+
+    padding: 16px;
+
+    margin-bottom: 16px;
+
+    box-shadow:
+        0 6px 20px rgba(0,0,0,0.3);
+
+    box-sizing: border-box;
+}
+
+/* =========================================================
+   TITLE
+   ========================================================= */
+
+.title {
+
+    font-size: 20px;
+
+    font-weight: bold;
+
+    margin-bottom: 10px;
+}
+
+/* =========================================================
+   FILTER CARD
+   ========================================================= */
+
+.filter-card {
+    text-align: left;
+}
+
+.filter-heading {
+
+    font-size: 18px;
+
+    font-weight: bold;
+
+    margin-bottom: 14px;
+}
+
+/*
+ * Two-row filter layout:
+ *
+ * Row 1 = headings
+ * Row 2 = controls
+ */
+
+.filter-grid {
+
+    display: grid;
+
+    grid-template-columns:
+        1.2fr
+        1.5fr
+        1.5fr
+        1.4fr
+        1.5fr
+        1.2fr;
+
+    column-gap: 12px;
+
+    row-gap: 6px;
+
+    align-items: end;
+}
+
+.filter-label {
+
+    font-size: 13px;
+
+    color: #94a3b8;
+
+    font-weight: 600;
+
+    padding-left: 2px;
+}
+
+.filter-control {
+
+    width: 100%;
+
+    box-sizing: border-box;
+
+    padding: 9px 10px;
+
+    border: 1px solid #475569;
+
+    border-radius: 8px;
+
+    background: #0f172a;
+
+    color: #e2e8f0;
+
+    font-family:
+        'Segoe UI',
+        sans-serif;
+
+    font-size: 14px;
+
+    outline: none;
+}
+
+.filter-control:focus {
+
+    border-color: #38bdf8;
+
+    box-shadow:
+        0 0 0 2px
+        rgba(56,189,248,0.15);
+}
+
+.filter-control::placeholder {
+    color: #64748b;
+}
+
+/* =========================================================
+   DATE RANGE
+   ========================================================= */
+
+.date-range {
+
+    display: grid;
+
+    grid-template-columns:
+        1fr 1fr;
+
+    gap: 6px;
+}
+
+/* =========================================================
+   AMOUNT FILTER
+   ========================================================= */
+
+.amount-filter {
+
+    display: grid;
+
+    grid-template-columns:
+        1fr 1fr;
+
+    gap: 6px;
+}
+
+.amount-filter.single-value {
+    grid-template-columns: 1fr;
+}
+
+/* =========================================================
+   FILTER ACTIONS
+   ========================================================= */
+
+.filter-actions {
+
+    display: flex;
+
+    justify-content:
+        flex-end;
+
+    gap: 10px;
+
+    margin-top: 16px;
+}
+
+button {
+
+    padding: 10px 16px;
+
+    border: none;
+
+    border-radius: 10px;
+
+    font-size: 14px;
+
+    cursor: pointer;
+}
+
+.btn {
+
+    box-shadow:
+        0 6px 20px
+        rgba(0,0,0,0.4);
+}
+
+.primary {
+
+    background: #22c55e;
+
+    color: black;
+}
+
+.primary:hover {
+    background: #16a34a;
+}
+
+.secondary {
+
+    background: #38bdf8;
+
+    color: black;
+}
+
+.secondary:hover {
+    background: #0ea5e9;
+}
+
+/* =========================================================
+   REFUND STATUS SELECT
+   ========================================================= */
+
+.status-select {
+    min-height: 38px;
+}
+
+/* =========================================================
+   RESULTS CARD
+   ========================================================= */
+
+.results-card {
+
+    overflow-x: auto;
+
+    text-align: left;
+}
+
+.results-header {
+
+    display: flex;
+
+    justify-content:
+        space-between;
+
+    align-items: center;
+
+    margin-bottom: 12px;
+}
+
+.results-count {
+
+    color: #94a3b8;
+
+    font-size: 13px;
+}
+
+/* =========================================================
+   TABLE
+   ========================================================= */
+
+.refund-table {
+
+    width: 100%;
+
+    border-collapse:
+        separate;
+
+    border-spacing: 0;
+
+    font-size: 13px;
+
+    min-width: 1100px;
+}
+
+.refund-table th {
+
+    background: #0f172a;
+
+    color: #cbd5e1;
+
+    padding: 12px 10px;
+
+    text-align: left;
+
+    font-weight: 600;
+
+    border-bottom:
+        1px solid #475569;
+
+    white-space: nowrap;
+}
+
+.refund-table td {
+
+    padding: 11px 10px;
+
+    border-bottom:
+        1px solid #334155;
+
+    vertical-align: middle;
+}
+
+.refund-table tbody tr:hover {
+
+    background:
+        rgba(51,65,85,0.45);
+}
+
+/* =========================================================
+   SORT HEADINGS
+   ========================================================= */
+
+.sort-header {
+
+    cursor: pointer;
+
+    user-select: none;
+}
+
+.sort-header:hover {
+    color: #38bdf8;
+}
+
+.sort-indicator {
+
+    margin-left: 5px;
+
+    color: #38bdf8;
+}
+
+/* =========================================================
+   REFUND STATUS
+   ========================================================= */
+
+.status-badge {
+
+    display: inline-block;
+
+    padding: 4px 8px;
+
+    border-radius: 8px;
+
+    font-size: 12px;
+
+    font-weight: 600;
+}
+
+.status-initiated {
+
+    background: #7c2d12;
+
+    color: #fed7aa;
+}
+
+.status-approved {
+
+    background: #065f46;
+
+    color: #bbf7d0;
+}
+
+.status-settled {
+
+    background: #1e40af;
+
+    color: #bfdbfe;
+}
+
+.status-rejected {
+
+    background: #7f1d1d;
+
+    color: #fecaca;
+}
+
+/* =========================================================
+   ERROR / REASON
+   ========================================================= */
+
+.refund-error {
+
+    color: #fca5a5;
+
+    max-width: 260px;
+
+    line-height: 1.4;
+}
+
+/* =========================================================
+   APPROVE BUTTON
+   ========================================================= */
+
+.approve-btn {
+
+    background: #22c55e;
+
+    color: black;
+
+    padding:
+        7px 12px;
+
+    border-radius: 8px;
+
+    font-size: 12px;
+
+    box-shadow: none;
+}
+
+.approve-btn:disabled {
+
+    background: #475569;
+
+    color: #94a3b8;
+
+    cursor: not-allowed;
+
+    opacity: 0.7;
+}
+
+/* =========================================================
+   LOADING
+   ========================================================= */
+
+.loading {
+
+    text-align: center;
+
+    padding: 30px;
+
+    color: #94a3b8;
+}
+
+/* =========================================================
+   EMPTY STATE
+   ========================================================= */
+
+.empty-state {
+
+    text-align: center;
+
+    padding: 40px;
+
+    color: #94a3b8;
+}
+
+/* =========================================================
+   RESPONSIVE
+   ========================================================= */
+
+@media (max-width: 1100px) {
+
+    .filter-grid {
+
+        grid-template-columns:
+            repeat(3, 1fr);
+    }
+}
+
+@media (max-width: 700px) {
+
+    .container {
+
+        width: 100%;
+
+        padding:
+            10px 12px 25px;
+    }
+
+    .filter-grid {
+
+        grid-template-columns:
+            1fr;
+    }
+
+    .filter-actions {
+
+        flex-direction:
+            column;
+    }
+
+    .filter-actions button {
+
+        width: 100%;
+    }
+
+    .results-card {
+
+        padding: 10px;
+    }
+}
+
+</style>
+
+</head>
+
+<body>
+
+<div class="container">
+
+```
+<!-- =====================================================
+     LOGO
+     ===================================================== -->
+
+<img
+    src="https://vidyutyatraa.s3.ap-south-1.amazonaws.com/vy_logo_cropped_lite.png"
+    class="logo"
+    alt="VidyutYatraa">
+
+
+<!-- =====================================================
+     HOME
+     ===================================================== -->
+
+<button
+    class="nav-btn"
+    onclick="goHome()">
+
+    ← Home
+
+</button>
+
+
+<!-- =====================================================
+     PAGE TITLE
+     ===================================================== -->
+
+<div class="card">
+
+    <div class="title">
+        💳 Refund Management
+    </div>
+
+</div>
+
+
+<!-- =====================================================
+     FILTER CARD
+     ===================================================== -->
+
+<div class="card filter-card">
+
+    <div class="filter-heading">
+        Filters
+    </div>
+
+
+    <!-- ================================
+         FILTER HEADINGS
+         ================================ -->
+
+    <div class="filter-grid">
+
+        <div class="filter-label">
+            Refund ID
+        </div>
+
+        <div class="filter-label">
+            Email
+        </div>
+
+        <div class="filter-label">
+            Filed On
+        </div>
+
+        <div class="filter-label">
+            Refund Amount
+        </div>
+
+        <div class="filter-label">
+            Description
+        </div>
+
+        <div class="filter-label">
+            Refund Type
+        </div>
+
+
+        <!-- ================================
+             FILTER VALUES
+             ================================ -->
+
+        <div>
+
+            <input
+                id="refundId"
+                class="filter-control"
+                type="text"
+                placeholder="Refund ID">
+
+        </div>
+
+
+        <div>
+
+            <input
+                id="email"
+                class="filter-control"
+                type="text"
+                placeholder="Email">
+
+        </div>
+
+
+        <div class="date-range">
+
+            <input
+                id="filedOnFrom"
+                class="filter-control"
+                type="datetime-local"
+                title="Filed On From">
+
+            <input
+                id="filedOnTo"
+                class="filter-control"
+                type="datetime-local"
+                title="Filed On To">
+
+        </div>
+
+
+        <div class="amount-filter">
+
+            <select
+                id="amountOperator"
+                class="filter-control"
+                onchange="updateAmountControls()">
+
+                <option value="equal">
+                    Equal
+                </option>
+
+                <option value="greater">
+                    Greater Than
+                </option>
+
+                <option value="less">
+                    Less Than
+                </option>
+
+                <option value="between">
+                    Between
+                </option>
+
+            </select>
+
+            <input
+                id="amountValue1"
+                class="filter-control"
+                type="number"
+                min="0"
+                step="0.01"
+                placeholder="Amount">
+
+        </div>
+
+
+        <div>
+
+            <input
+                id="description"
+                class="filter-control"
+                type="text"
+                placeholder="Description">
+
+        </div>
+
+
+        <div>
+
+            <input
+                id="refundType"
+                class="filter-control"
+                type="text"
+                placeholder="Refund Type">
+
+        </div>
+
+    </div>
+
+
+    <!-- =================================================
+         SECOND FILTER ROW
+         ================================================= -->
+
+    <div
+        class="filter-grid"
+        style="margin-top:14px;">
+
+        <div class="filter-label">
+            Refund Status
+        </div>
+
+        <div></div>
+        <div></div>
+        <div></div>
+        <div></div>
+        <div></div>
+
+
+        <div>
+
+            <select
+                id="refundStatus"
+                class="filter-control status-select">
+
+                <option value="all">
+                    All
+                </option>
+
+                <option value="Initiated"
+                        selected>
+                    Initiated
+                </option>
+
+                <option value="Approved">
+                    Approved
+                </option>
+
+                <option value="Settled">
+                    Settled
+                </option>
+
+                <option value="Rejected">
+                    Rejected
+                </option>
+
+            </select>
+
+        </div>
+
+    </div>
+
+
+    <!-- =================================================
+         FILTER BUTTONS
+         ================================================= -->
+
+    <div class="filter-actions">
+
+        <button
+            class="secondary btn"
+            onclick="resetFilters()">
+
+            Reset
+
+        </button>
+
+        <button
+            class="primary btn"
+            onclick="applyFilters()">
+
+            Apply Filters
+
+        </button>
+
+    </div>
+
+</div>
+
+
+<!-- =====================================================
+     RESULTS
+     ===================================================== -->
+
+<div class="card results-card">
+
+    <div class="results-header">
+
+        <div class="title"
+             style="margin-bottom:0;">
+
+            Refunds
+
+        </div>
+
+        <div
+            id="resultsCount"
+            class="results-count">
+
+            0 records
+
+        </div>
+
+    </div>
+
+
+    <div id="tableContainer">
+
+        <div class="loading">
+
+            Loading refunds...
+
+        </div>
+
+    </div>
+
+</div>
+```
+
+</div>
+
+<script>
+
+/* =========================================================
+   STATE
+   ========================================================= */
+
+let refunds = [];
+
+let sortField = "filedOn";
+
+let sortDirection = "asc";
+
+
+/* =========================================================
+   HOME
+   ========================================================= */
+
+function goHome() {
+
+    window.location.href =
+        "/internal-dashboard";
+
+}
+
+
+/* =========================================================
+   AMOUNT CONTROL
+   ========================================================= */
+
+function updateAmountControls() {
+
+    const operator =
+        document.getElementById(
+            "amountOperator"
+        ).value;
+
+    const amountContainer =
+        document.getElementById(
+            "amountValue1"
+        ).parentElement;
+
+    if (operator === "between") {
+
+        amountContainer.innerHTML = `
+
+            <div
+                style="
+                    display:grid;
+                    grid-template-columns:1fr 1fr;
+                    gap:6px;
+                ">
+
+                <input
+                    id="amountValue1"
+                    class="filter-control"
+                    type="number"
+                    min="0"
+                    step="0.01"
+                    placeholder="From">
+
+                <input
+                    id="amountValue2"
+                    class="filter-control"
+                    type="number"
+                    min="0"
+                    step="0.01"
+                    placeholder="To">
+
+            </div>
+
+        `;
+
+    } else {
+
+        amountContainer.innerHTML = `
+
+            <input
+                id="amountValue1"
+                class="filter-control"
+                type="number"
+                min="0"
+                step="0.01"
+                placeholder="Amount">
+
+        `;
+    }
+}
+
+
+/* =========================================================
+   EPOCH CONVERSION
+   Browser datetime-local is LOCAL TIME.
+   Convert it to epoch seconds for the API.
+   ========================================================= */
+
+function localDateToEpoch(
+    value
+) {
+
+    if (!value) {
+        return null;
+    }
+
+    const date =
+        new Date(value);
+
+    if (
+        Number.isNaN(
+            date.getTime()
+        )
+    ) {
+        return null;
+    }
+
+    return Math.floor(
+        date.getTime() / 1000
+    );
+}
+
+
+/* =========================================================
+   BUILD QUERY PARAMETERS
+   ========================================================= */
+
+function buildQueryParams() {
+
+    const params =
+        new URLSearchParams();
+
+
+    const refundId =
+        document
+            .getElementById(
+                "refundId"
+            )
+            .value
+            .trim();
+
+    if (refundId) {
+
+        params.set(
+            "refundId",
+            refundId
+        );
+    }
+
+
+    const email =
+        document
+            .getElementById(
+                "email"
+            )
+            .value
+            .trim();
+
+    if (email) {
+
+        params.set(
+            "email",
+            email
+        );
+    }
+
+
+    const filedOnFrom =
+        localDateToEpoch(
+            document
+                .getElementById(
+                    "filedOnFrom"
+                )
+                .value
+        );
+
+    if (filedOnFrom !== null) {
+
+        params.set(
+            "filedOnFrom",
+            filedOnFrom
+        );
+    }
+
+
+    const filedOnTo =
+        localDateToEpoch(
+            document
+                .getElementById(
+                    "filedOnTo"
+                )
+                .value
+        );
+
+    if (filedOnTo !== null) {
+
+        params.set(
+            "filedOnTo",
+            filedOnTo
+        );
+    }
+
+
+    const operator =
+        document
+            .getElementById(
+                "amountOperator"
+            )
+            .value;
+
+
+    const amount1Element =
+        document
+            .getElementById(
+                "amountValue1"
+            );
+
+    const amount1 =
+        amount1Element
+            ? amount1Element.value
+            : "";
+
+
+    if (amount1 !== "") {
+
+        params.set(
+            "amountOperator",
+            operator
+        );
+
+        params.set(
+            "amountValue1",
+            amount1
+        );
+
+
+        if (
+            operator === "between"
+        ) {
+
+            const amount2 =
+                document
+                    .getElementById(
+                        "amountValue2"
+                    )
+                    .value;
+
+            if (amount2 !== "") {
+
+                params.set(
+                    "amountValue2",
+                    amount2
+                );
+            }
+        }
+    }
+
+
+    const description =
+        document
+            .getElementById(
+                "description"
+            )
+            .value
+            .trim();
+
+    if (description) {
+
+        params.set(
+            "description",
+            description
+        );
+    }
+
+
+    const refundType =
+        document
+            .getElementById(
+                "refundType"
+            )
+            .value
+            .trim();
+
+    if (refundType) {
+
+        params.set(
+            "refundType",
+            refundType
+        );
+    }
+
+
+    const status =
+        document
+            .getElementById(
+                "refundStatus"
+            )
+            .value;
+
+    if (
+        status &&
+        status !== "all"
+    ) {
+
+        params.set(
+            "refundStatus",
+            status
+        );
+    }
+
+
+    return params;
+}
+
+
+/* =========================================================
+   APPLY FILTERS
+   ========================================================= */
+
+async function applyFilters() {
+
+    const params =
+        buildQueryParams();
+
+
+    /*
+     * Initial/default sort is:
+     *
+     * Filed On ASC
+     */
+
+    sortField = "filedOn";
+    sortDirection = "asc";
+
+
+    const tableContainer =
+        document.getElementById(
+            "tableContainer"
+        );
+
+    tableContainer.innerHTML = `
+
+        <div class="loading">
+            Loading refunds...
+        </div>
+
+    `;
+
+
+    try {
+
+        const response =
+            await fetch(
+                `/query-response?${params.toString()}`,
+                {
+                    method: "GET",
+                    credentials: "include"
+                }
+            );
+
+
+        if (!response.ok) {
+
+            throw new Error(
+                `HTTP ${response.status}`
+            );
+        }
+
+
+        const payload =
+            await response.json();
+
+
+        /*
+         * Expected:
+         *
+         * {
+         *   "refunds": [...],
+         *   ...
+         * }
+         */
+
+        refunds =
+            payload.refunds || [];
+
+
+        /*
+         * The backend may return
+         * refundAllowed and error
+         * for each refund.
+         *
+         * We preserve those fields
+         * unchanged for table rendering.
+         */
+
+
+        sortRefunds();
+
+
+        renderRefunds();
+
+
+    } catch (error) {
+
+        console.error(
+            "Failed to load refunds:",
+            error
+        );
+
+
+        tableContainer.innerHTML = `
+
+            <div class="empty-state">
+
+                Failed to load refunds.
+
+                <br><br>
+
+                ${escapeHtml(
+                    error.message
+                )}
+
+            </div>
+
+        `;
+
+        document
+            .getElementById(
+                "resultsCount"
+            )
+            .textContent =
+            "Error";
+
+    }
+
+}
+
+
+/* =========================================================
+   RESET FILTERS
+   ========================================================= */
+
+function resetFilters() {
+
+    document
+        .getElementById(
+            "refundId"
+        )
+        .value = "";
+
+    document
+        .getElementById(
+            "email"
+        )
+        .value = "";
+
+    document
+        .getElementById(
+            "filedOnFrom"
+        )
+        .value = "";
+
+    document
+        .getElementById(
+            "filedOnTo"
+        )
+        .value = "";
+
+    document
+        .getElementById(
+            "amountOperator"
+        )
+        .value = "equal";
+
+    updateAmountControls();
+
+    document
+        .getElementById(
+            "description"
+        )
+        .value = "";
+
+    document
+        .getElementById(
+            "refundType"
+        )
+        .value = "";
+
+    document
+        .getElementById(
+            "refundStatus"
+        )
+        .value = "Initiated";
+
+
+    applyFilters();
+}
+
+
+/* =========================================================
+   INITIAL LOAD
+   ========================================================= */
+
+window.onload = function() {
+
+    /*
+     * Default:
+     *
+     * refundStatus = Initiated
+     *
+     * The backend/API can be extended to accept
+     * multiple refundStatus parameters:
+     *
+     * refundStatus=Initiated
+     * refundStatus=Approved
+     *
+     * If your backend expects the comma-separated
+     * form, change buildQueryParams accordingly.
+     */
+
+    const params =
+        new URLSearchParams();
+
+    params.set(
+        "refundStatus",
+        "Initiated"
+    );
+
+    params.append(
+        "refundStatus",
+        "Approved"
+    );
+
+
+    sortField = "filedOn";
+    sortDirection = "asc";
+
+
+    fetch(
+        `/query-response?${params.toString()}`,
+        {
+            method: "GET",
+            credentials: "include"
+        }
+    )
+    .then(
+        response => {
+
+            if (!response.ok) {
+
+                throw new Error(
+                    `HTTP ${response.status}`
+                );
+            }
+
+            return response.json();
+
+        }
+    )
+    .then(
+        payload => {
+
+            refunds =
+                payload.refunds || [];
+
+            sortRefunds();
+
+            renderRefunds();
+
+        }
+    )
+    .catch(
+        error => {
+
+            console.error(error);
+
+            document
+                .getElementById(
+                    "tableContainer"
+                )
+                .innerHTML = `
+
+                    <div
+                        class="empty-state">
+
+                        Failed to load refunds.
+
+                        <br><br>
+
+                        ${escapeHtml(
+                            error.message
+                        )}
+
+                    </div>
+
+                `;
+        }
+    );
+
+};
+
+
+/* =========================================================
+   SORT
+   ========================================================= */
+
+function sortRefunds() {
+
+    refunds.sort(
+        (a, b) => {
+
+            let av;
+            let bv;
+
+
+            if (
+                sortField === "filedOn"
+            ) {
+
+                av =
+                    Number(
+                        a.filedOn || 0
+                    );
+
+                bv =
+                    Number(
+                        b.filedOn || 0
+                    );
+
+            } else if (
+                sortField ===
+                "refundAmount"
+            ) {
+
+                av =
+                    Number(
+                        a.refundAmount || 0
+                    );
+
+                bv =
+                    Number(
+                        b.refundAmount || 0
+                    );
+
+            } else if (
+                sortField ===
+                "refundStatus"
+            ) {
+
+                av =
+                    String(
+                        a.refundStatus || ""
+                    ).toLowerCase();
+
+                bv =
+                    String(
+                        b.refundStatus || ""
+                    ).toLowerCase();
+
+            }
+
+
+            if (av < bv) {
+
+                return sortDirection ===
+                    "asc"
+                    ? -1
+                    : 1;
+            }
+
+            if (av > bv) {
+
+                return sortDirection ===
+                    "asc"
+                    ? 1
+                    : -1;
+            }
+
+            return 0;
+        }
+    );
+}
+
+
+/* =========================================================
+   ESCAPE HTML
+   ========================================================= */
+
+function escapeHtml(value) {
+
+    return String(value ?? "")
+        .replace(
+            /&/g,
+            "&amp;"
+        )
+        .replace(
+            /</g,
+            "&lt;"
+        )
+        .replace(
+            />/g,
+            "&gt;"
+        )
+        .replace(
+            /"/g,
+            "&quot;"
+        )
+        .replace(
+            /'/g,
+            "&#039;"
+        );
+}
+
+</script>
+
+</body>
+</html>
