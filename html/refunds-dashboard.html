@@ -1670,25 +1670,13 @@ function renderRefunds() {
 
                 <td>
                     ${
-                        refundAllowed === "Y"
-                            ? `
-                                <span
-                                    style="
-                                        color:#86efac;
-                                        font-weight:600;
-                                    ">
-                                    Yes
-                                </span>
-                              `
-                            : `
-                                <span
-                                    style="
-                                        color:#fca5a5;
-                                        font-weight:600;
-                                    ">
-                                    No
-                                </span>
-                              `
+                        refundStatus === "Initiated"
+                            ? (
+                                refundAllowed === true
+                                    ? '<span class="status-approved">Yes</span>'
+                                    : '<span class="status-rejected">No</span>'
+                            )
+                            : ""
                     }
                 </td>
 
