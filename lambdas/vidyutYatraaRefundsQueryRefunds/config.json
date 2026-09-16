@@ -1,28 +1,28 @@
 {
     "Runtime": "python3.14",
     "Handler": "lambda_function.lambda_handler",
-    "Role": "arn:aws:iam::290105519700:role/VY-Prod-LambdaExecutionRole",
+    "Role": "arn:aws:iam::038277652304:role/VY-Prod-LambdaExecutionRole",
     "MemorySize": 128,
     "Timeout": 3,
     "Environment": {
         "Variables": {
-            "S3_BUCKET": "vidyutyatraa",
-            "ROOT_URL": "https://www.vidyutyatraa.co.in",
-            "WS_API_ENDPOINT": "https://1e1u0uydpb.execute-api.ap-south-1.amazonaws.com/prod",
-            "ACCOUNT_ID": "290105519700",
-            "WS_URL": "wss://1e1u0uydpb.execute-api.ap-south-1.amazonaws.com/prod",
-            "OCPP_ENDPOINT": "https://oa3baog1g4.execute-api.ap-south-1.amazonaws.com/prod",
+            "S3_BUCKET": "vidyutyatraa-test",
+            "ROOT_URL": "https://test.vidyutyatraa.co.in",
+            "WS_API_ENDPOINT": "https://eead0fbgw1.execute-api.ap-south-1.amazonaws.com/test",
+            "ACCOUNT_ID": "038277652304",
+            "WS_URL": "wss://eead0fbgw1.execute-api.ap-south-1.amazonaws.com/test",
+            "OCPP_ENDPOINT": "https://93cqlz3bxj.execute-api.ap-south-1.amazonaws.com/test",
             "PAYU_CALL_URL": "https://test.payu.in/_payment",
-            "WHATSAPP_BOT_NUMBER": "916363910290",
+            "WHATSAPP_BOT_NUMBER": "15551380046",
             "WA_CHARGE_AMT_FLOW_ID": "953438513800128",
-            "WHATSAPP_LOAD_AMT_FLOW_ID": "2393117144525762",
-            "WHATSAPP_PHONE_NUMBER_ID": "999961679872413",
+            "WHATSAPP_LOAD_AMT_FLOW_ID": "1602228114343795",
+            "WHATSAPP_PHONE_NUMBER_ID": "1012428625295915",
             "WA_PAYMENT_CONFIG_NAME": "VY-PayU-Config",
-            "WA_ENTER_CHARGER_ID": "26952376524363790",
-            "WHATSAPP_REGISTRATION_FLOW_ID": "910942785243856",
+            "WA_ENTER_CHARGER_ID": "1576102140318408",
+            "WHATSAPP_REGISTRATION_FLOW_ID": "1287748839864462",
             "PG_ID": "payu13005385",
-            "CMS_COGNITO_USER_POOL_ID": "ap-south-1_T47yHPOrn",
-            "CMS_COGNITO_CLIENT_ID": "33rl33q3otta26fn9cn1sul447"
+            "CMS_COGNITO_USER_POOL_ID": "ap-south-1_paYVRhUCw",
+            "CMS_COGNITO_CLIENT_ID": "10kin6c5c066citm9a237qsfc5"
         }
     },
     "Layers": []

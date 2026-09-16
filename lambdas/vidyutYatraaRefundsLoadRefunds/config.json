@@ -1,0 +1,30 @@
+{
+    "Runtime": "python3.14",
+    "Handler": "lambda_function.lambda_handler",
+    "Role": "arn:aws:iam::290105519700:role/VY-Prod-LambdaExecutionRole",
+    "MemorySize": 128,
+    "Timeout": 3,
+    "Environment": {
+        "Variables": {
+            "S3_BUCKET": "vidyutyatraa",
+            "ROOT_URL": "https://www.vidyutyatraa.co.in",
+            "WS_API_ENDPOINT": "https://1e1u0uydpb.execute-api.ap-south-1.amazonaws.com/prod",
+            "ACCOUNT_ID": "290105519700",
+            "WS_URL": "wss://1e1u0uydpb.execute-api.ap-south-1.amazonaws.com/prod",
+            "OCPP_ENDPOINT": "https://oa3baog1g4.execute-api.ap-south-1.amazonaws.com/prod",
+            "PAYU_CALL_URL": "https://secure.payu.in/_payment",
+            "WHATSAPP_BOT_NUMBER": "916363910290",
+            "WA_CHARGE_AMT_FLOW_ID": "953438513800128",
+            "WHATSAPP_LOAD_AMT_FLOW_ID": "2393117144525762",
+            "WHATSAPP_PHONE_NUMBER_ID": "999961679872413",
+            "WA_PAYMENT_CONFIG_NAME": "VY-PayU-Config",
+            "WA_ENTER_CHARGER_ID": "26952376524363790",
+            "WHATSAPP_REGISTRATION_FLOW_ID": "910942785243856",
+            "CMS_COGNITO_USER_POOL_ID": "ap-south-1_T47yHPOrn",
+            "CMS_COGNITO_CLIENT_ID": "33rl33q3otta26fn9cn1sul447"
+        }
+    },
+    "Layers": [
+        "arn:aws:lambda:ap-south-1:290105519700:layer:jwt-layer:8"
+    ]
+}
