@@ -11,9 +11,14 @@ from botocore.exceptions import ClientError
 # CONFIGURATION
 # ============================================================
 
-TABLE_NAME = os.environ.get(
-    "REFUNDS_TABLE",
+REFUNDS_TABLE_NAME = os.environ.get(
+    "REFUNDS_TABLE_NAME",
     "VidyutYatraaRefunds"
+)
+
+EVUSERS_TABLE_NAME = os.environ.get(
+    "EVUSERS_TABLE_NAME",
+    "VidyutYatraaEVUsers"
 )
 
 EMAIL_INDEX = "email-filedOn-index"
@@ -30,8 +35,8 @@ VALID_STATUSES = {
 }
 
 dynamodb = boto3.resource("dynamodb")
-table = dynamodb.Table(TABLE_NAME)
-
+refunds = dynamodb.Table(REFUNDS_TABLE_NAME)
+users = dynamodb.Table(EVUSERS_TABLE_NAME)
 
 # ============================================================
 # RESPONSE HELPERS
@@ -411,7 +416,7 @@ def execute_query(
         kwargs["FilterExpression"] = filter_expression
 
     while True:
-        result = table.query(**kwargs)
+        result = refunds.query(**kwargs)
 
         items.extend(
             result.get("Items", [])
@@ -445,7 +450,7 @@ def execute_scan(filter_expression=None):
         kwargs["FilterExpression"] = filter_expression
 
     while True:
-        result = table.scan(**kwargs)
+        result = refunds.scan(**kwargs)
 
         items.extend(
             result.get("Items", [])
@@ -469,13 +474,13 @@ def execute_scan(filter_expression=None):
 
 def get_by_refund_id(refund_id):
     """
-    refundId is assumed to be the base table partition key.
+    refundId is assumed to be the base refunds partition key.
 
     GetItem is therefore the highest-performance lookup when
     refundId is supplied.
     """
 
-    result = table.get_item(
+    result = refunds.get_item(
         Key={
             "refundId": refund_id
         }
@@ -682,6 +687,78 @@ def sort_results(items):
         ),
     )
 
+# ============================================================
+# REFUND ELIGIBILITY
+# ============================================================
+
+def add_refund_allowed_flag(items):
+    """
+    For every Initiated refund, look up the corresponding user
+    in VidyutYatraaEVUsers using email and compare walletBalance
+    with refundAmount.
+
+    refundAllowed is added only for Initiated refunds.
+
+    True  -> walletBalance >= refundAmount
+    False -> walletBalance < refundAmount
+
+    Refunds with any other status do not receive refundAllowed.
+    """
+
+    for item in items:
+
+        if item.get("refundStatus") != "Initiated":
+            continue
+
+        email = (
+            item.get("email")
+            or ""
+        ).strip()
+
+        refund_amount = Decimal(
+            str(item.get("refundAmount", 0))
+        )
+
+        # ----------------------------------------------------
+        # No email -> cannot establish wallet balance
+        # ----------------------------------------------------
+        if not email:
+            item["refundAllowed"] = False
+            continue
+
+        # ----------------------------------------------------
+        # Look up user by email
+        #
+        # Assumes "email" is the partition key of
+        # VidyutYatraaEVUsers.
+        # ----------------------------------------------------
+        result = users.get_item(
+            Key={
+                "email": email
+            }
+        )
+
+        user = result.get("Item")
+
+        if user is None:
+            item["refundAllowed"] = False
+            continue
+
+        # ----------------------------------------------------
+        # Get wallet balance
+        # ----------------------------------------------------
+        wallet_balance = Decimal(
+            str(user.get("walletBalance", 0))
+        )
+
+        # ----------------------------------------------------
+        # Determine eligibility
+        # ----------------------------------------------------
+        item["refundAllowed"] = (
+            wallet_balance >= refund_amount
+        )
+
+    return items
 
 # ============================================================
 # MAIN LAMBDA
@@ -876,6 +953,8 @@ def lambda_handler(event, context):
         # ----------------------------------------------------
 
         items = sort_results(items)
+
+        items = add_refund_allowed_flag(items)
 
         # ----------------------------------------------------
         # RESPONSE
