@@ -1431,6 +1431,378 @@ window.onload = function() {
 
 };
 
+/* =========================================================
+   RENDER REFUNDS
+   ========================================================= */
+
+function renderRefunds() {
+
+    const tableContainer =
+        document.getElementById("tableContainer");
+
+    const resultsCount =
+        document.getElementById("resultsCount");
+
+    /* -----------------------------------------------------
+       EMPTY STATE
+       ----------------------------------------------------- */
+
+    if (!refunds || refunds.length === 0) {
+
+        resultsCount.textContent = "0 records";
+
+        tableContainer.innerHTML = `
+            <div class="empty-state">
+                No refunds found.
+            </div>
+        `;
+
+        return;
+    }
+
+
+    /* -----------------------------------------------------
+       RESULTS COUNT
+       ----------------------------------------------------- */
+
+    resultsCount.textContent =
+        `${refunds.length} record${refunds.length === 1 ? "" : "s"}`;
+
+
+    /* -----------------------------------------------------
+       TABLE
+       ----------------------------------------------------- */
+
+    let html = `
+        <table class="refund-table">
+
+            <thead>
+                <tr>
+
+                    <th
+                        class="sort-header"
+                        onclick="changeSort('refundId')">
+                        Refund ID
+                        <span class="sort-indicator">
+                            ${getSortIndicator("refundId")}
+                        </span>
+                    </th>
+
+                    <th
+                        class="sort-header"
+                        onclick="changeSort('email')">
+                        Email
+                        <span class="sort-indicator">
+                            ${getSortIndicator("email")}
+                        </span>
+                    </th>
+
+                    <th
+                        class="sort-header"
+                        onclick="changeSort('filedOn')">
+                        Filed On
+                        <span class="sort-indicator">
+                            ${getSortIndicator("filedOn")}
+                        </span>
+                    </th>
+
+                    <th
+                        class="sort-header"
+                        onclick="changeSort('refundAmount')">
+                        Refund Amount
+                        <span class="sort-indicator">
+                            ${getSortIndicator("refundAmount")}
+                        </span>
+                    </th>
+
+                    <th>
+                        Description
+                    </th>
+
+                    <th
+                        class="sort-header"
+                        onclick="changeSort('refundStatus')">
+                        Status
+                        <span class="sort-indicator">
+                            ${getSortIndicator("refundStatus")}
+                        </span>
+                    </th>
+
+                    <th>
+                        Refund Allowed
+                    </th>
+
+                    <th>
+                        Error / Reason
+                    </th>
+
+                    <th>
+                        Action
+                    </th>
+
+                </tr>
+            </thead>
+
+            <tbody>
+    `;
+
+
+    /* -----------------------------------------------------
+       ROWS
+       ----------------------------------------------------- */
+
+    refunds.forEach(refund => {
+
+        const refundId =
+            refund.refundId || "";
+
+        const email =
+            refund.email || "";
+
+        const filedOn =
+            formatFiledOn(refund.filedOn);
+
+        const refundAmount =
+            refund.refundAmount !== undefined &&
+            refund.refundAmount !== null
+                ? Number(refund.refundAmount).toFixed(2)
+                : "";
+
+        const refundDetails =
+            refund.refundDetails || {};
+
+        const description =
+            refundDetails.refundDescription || "";
+
+        const refundType =
+            refundDetails.refundType || "";
+
+        const refundStatus =
+            refund.refundStatus || "";
+
+        const refundAllowed =
+            refund.refundAllowed || "";
+
+        const error =
+            refund.error || "";
+
+
+        /* -------------------------------------------------
+           STATUS CLASS
+           ------------------------------------------------- */
+
+        let statusClass = "";
+
+        switch (refundStatus) {
+
+            case "Initiated":
+                statusClass = "status-initiated";
+                break;
+
+            case "Approved":
+                statusClass = "status-approved";
+                break;
+
+            case "Settled":
+                statusClass = "status-settled";
+                break;
+
+            case "Rejected":
+                statusClass = "status-rejected";
+                break;
+        }
+
+
+        /* -------------------------------------------------
+           APPROVE BUTTON
+           ------------------------------------------------- */
+
+        const approveDisabled =
+            refundAllowed !== "Y" ||
+            refundStatus !== "Initiated";
+
+        html += `
+            <tr>
+
+                <td>
+                    ${escapeHtml(refundId)}
+                </td>
+
+                <td>
+                    ${escapeHtml(email)}
+                </td>
+
+                <td>
+                    ${escapeHtml(filedOn)}
+                </td>
+
+                <td>
+                    ₹${escapeHtml(refundAmount)}
+                </td>
+
+                <td>
+                    <div>
+                        ${escapeHtml(description)}
+                    </div>
+
+                    ${
+                        refundType
+                            ? `
+                                <div
+                                    style="
+                                        margin-top:4px;
+                                        color:#94a3b8;
+                                        font-size:12px;
+                                    ">
+                                    ${escapeHtml(refundType)}
+                                </div>
+                              `
+                            : ""
+                    }
+                </td>
+
+                <td>
+                    <span
+                        class="status-badge ${statusClass}">
+                        ${escapeHtml(refundStatus)}
+                    </span>
+                </td>
+
+                <td>
+                    ${
+                        refundAllowed === "Y"
+                            ? `
+                                <span
+                                    style="
+                                        color:#86efac;
+                                        font-weight:600;
+                                    ">
+                                    Yes
+                                </span>
+                              `
+                            : `
+                                <span
+                                    style="
+                                        color:#fca5a5;
+                                        font-weight:600;
+                                    ">
+                                    No
+                                </span>
+                              `
+                    }
+                </td>
+
+                <td>
+                    ${
+                        error
+                            ? `
+                                <div class="refund-error">
+                                    ${escapeHtml(error)}
+                                </div>
+                              `
+                            : ""
+                    }
+                </td>
+
+                <td>
+                    <button
+                        class="approve-btn"
+                        ${
+                            approveDisabled
+                                ? "disabled"
+                                : ""
+                        }
+                        onclick="approveRefund(
+                            '${escapeHtml(refundId)}'
+                        )">
+
+                        Approve
+
+                    </button>
+                </td>
+
+            </tr>
+        `;
+    });
+
+
+    html += `
+            </tbody>
+
+        </table>
+    `;
+
+
+    tableContainer.innerHTML = html;
+}
+
+
+/* =========================================================
+   FILED ON FORMATTING
+   ========================================================= */
+
+function formatFiledOn(epochSeconds) {
+
+    if (
+        epochSeconds === null ||
+        epochSeconds === undefined ||
+        epochSeconds === ""
+    ) {
+        return "";
+    }
+
+    const date =
+        new Date(
+            Number(epochSeconds) * 1000
+        );
+
+    if (Number.isNaN(date.getTime())) {
+        return "";
+    }
+
+    return date.toLocaleString();
+}
+
+
+/* =========================================================
+   SORT INDICATOR
+   ========================================================= */
+
+function getSortIndicator(field) {
+
+    if (sortField !== field) {
+        return "";
+    }
+
+    return sortDirection === "asc"
+        ? "▲"
+        : "▼";
+}
+
+
+/* =========================================================
+   CHANGE SORT
+   ========================================================= */
+
+function changeSort(field) {
+
+    if (sortField === field) {
+
+        sortDirection =
+            sortDirection === "asc"
+                ? "desc"
+                : "asc";
+
+    } else {
+
+        sortField = field;
+        sortDirection = "asc";
+    }
+
+    sortRefunds();
+
+    renderRefunds();
+}
 
 /* =========================================================
    SORT
