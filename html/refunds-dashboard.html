@@ -588,7 +588,6 @@ button {
 
 <div class="container">
 
-```
 <!-- =====================================================
      LOGO
      ===================================================== -->
@@ -663,9 +662,8 @@ button {
         </div>
 
         <div class="filter-label">
-            Refund Type
+            Refund Status
         </div>
-
 
         <!-- ================================
              FILTER VALUES
@@ -755,39 +753,6 @@ button {
                 placeholder="Description">
 
         </div>
-
-
-        <div>
-
-            <input
-                id="refundType"
-                class="filter-control"
-                type="text"
-                placeholder="Refund Type">
-
-        </div>
-
-    </div>
-
-
-    <!-- =================================================
-         SECOND FILTER ROW
-         ================================================= -->
-
-    <div
-        class="filter-grid"
-        style="margin-top:14px;">
-
-        <div class="filter-label">
-            Refund Status
-        </div>
-
-        <div></div>
-        <div></div>
-        <div></div>
-        <div></div>
-        <div></div>
-
 
         <div>
 
@@ -1163,23 +1128,6 @@ function buildQueryParams() {
     }
 
 
-    const refundType =
-        document
-            .getElementById(
-                "refundType"
-            )
-            .value
-            .trim();
-
-    if (refundType) {
-
-        params.set(
-            "refundType",
-            refundType
-        );
-    }
-
-
     const status =
         document
             .getElementById(
@@ -1372,12 +1320,6 @@ function resetFilters() {
 
     document
         .getElementById(
-            "refundType"
-        )
-        .value = "";
-
-    document
-        .getElementById(
             "refundStatus"
         )
         .value = "Initiated";
@@ -1427,7 +1369,7 @@ window.onload = function() {
 
 
     fetch(
-        `/query-response?${params.toString()}`,
+        `/query-refunds?${params.toString()}`,
         {
             method: "GET",
             credentials: "include"

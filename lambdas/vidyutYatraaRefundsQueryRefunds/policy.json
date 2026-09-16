@@ -1,0 +1,20 @@
+{
+    "Version": "2012-10-17",
+    "Id": "default",
+    "Statement": [
+        {
+            "Sid": "a715ed7a-66b2-58d9-af46-858174175f0b",
+            "Effect": "Allow",
+            "Principal": {
+                "Service": "apigateway.amazonaws.com"
+            },
+            "Action": "lambda:InvokeFunction",
+            "Resource": "arn:aws:lambda:ap-south-1:290105519700:function:vidyutYatraaRefundsQueryRefunds",
+            "Condition": {
+                "ArnLike": {
+                    "AWS:SourceArn": "arn:aws:execute-api:ap-south-1:290105519700:k1fjvvrrj2/*/GET/query-refunds"
+                }
+            }
+        }
+    ]
+}
