@@ -497,15 +497,44 @@ button {
     box-shadow: none;
 }
 
-.approve-btn:disabled {
+/* =========================================================
+   REJECT BUTTON
+   ========================================================= */
 
-    background: #475569;
+   .reject-btn {
 
-    color: #94a3b8;
+    background: #ef4444;
 
-    cursor: not-allowed;
+    color: white;
 
-    opacity: 0.7;
+    padding:
+        7px 12px;
+
+    border-radius: 8px;
+
+    font-size: 12px;
+
+    box-shadow: none;
+}
+
+/* =========================================================
+   CANCEL BUTTON
+   ========================================================= */
+
+   .cancel-btn {
+
+    background: #f59e0b;
+
+    color: #020617;
+
+    padding:
+        7px 12px;
+
+    border-radius: 8px;
+
+    font-size: 12px;
+
+    box-shadow: none;
 }
 
 /* =========================================================
@@ -1614,12 +1643,56 @@ function renderRefunds() {
 
 
         /* -------------------------------------------------
-           APPROVE BUTTON
+           APPROVE/REJECT/CANCEL BUTTON
            ------------------------------------------------- */
 
-        const approveDisabled =
-            refundAllowed !== "Y" ||
-            refundStatus !== "Initiated";
+        let actionButtons = "";
+
+        if (refundStatus === "Initiated") {
+
+            // Approve only when refund is allowed
+            if (refundAllowed === true) {
+                actionButtons += `
+                    <button
+                        class="approve-btn"
+                        onclick="approveRefund(
+                            '${escapeHtml(refundId)}'
+                        )">
+
+                        Approve
+
+                    </button>
+                `;
+            }
+
+            // Reject is available for every Initiated refund
+            actionButtons += `
+                <button
+                    class="reject-btn"
+                    onclick="rejectRefund(
+                        '${escapeHtml(refundId)}'
+                    )">
+
+                    Reject
+
+                </button>
+            `;
+
+        } else if (refundStatus === "Approved") {
+
+            // Cancel is available for Approved refunds
+            actionButtons += `
+                <button
+                    class="cancel-btn"
+                    onclick="cancelRefund(
+                        '${escapeHtml(refundId)}'
+                    )">
+
+                    Cancel
+
+                </button>
+            `;
+        }
 
         html += `
             <tr>
@@ -1693,20 +1766,7 @@ function renderRefunds() {
                 </td>
 
                 <td>
-                    <button
-                        class="approve-btn"
-                        ${
-                            approveDisabled
-                                ? "disabled"
-                                : ""
-                        }
-                        onclick="approveRefund(
-                            '${escapeHtml(refundId)}'
-                        )">
-
-                        Approve
-
-                    </button>
+                    ${actionButtons}
                 </td>
 
             </tr>
@@ -1901,6 +1961,22 @@ function escapeHtml(value) {
             /'/g,
             "&#039;"
         );
+}
+
+/* =========================================================
+   APPROVE, REJECT & CANCEL Refunds
+   ========================================================= */
+
+function approveRefund(refundId) {
+    console.log("Approve refund:", refundId);
+}
+
+function rejectRefund(refundId) {
+    console.log("Reject refund:", refundId);
+}
+
+function cancelRefund(refundId) {
+    console.log("Cancel refund:", refundId);
 }
 
 </script>
