@@ -609,6 +609,275 @@ button {
     }
 }
 
+/* -------------------------------------------------
+   REMARKS
+   ------------------------------------------------- */
+
+.remarks-cell {
+    min-width: 180px;
+}
+
+.show-remarks-link {
+    display: block;
+    color: #38bdf8;
+    cursor: pointer;
+    text-decoration: underline;
+    margin-bottom: 8px;
+    font-size: 13px;
+}
+
+.show-remarks-link:hover {
+    color: #7dd3fc;
+}
+
+.new-remark-input {
+    width: 100%;
+    box-sizing: border-box;
+    background: #0f172a;
+    color: #e2e8f0;
+    border: 1px solid #475569;
+    border-radius: 8px;
+    padding: 8px;
+    resize: vertical;
+    font-family: inherit;
+    font-size: 12px;
+}
+
+.new-remark-input:focus {
+    outline: none;
+    border-color: #38bdf8;
+}
+
+
+/* -------------------------------------------------
+   REMARKS MODAL
+   ------------------------------------------------- */
+
+.remarks-modal {
+    position: fixed;
+    inset: 0;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    background: rgba(0, 0, 0, 0.65);
+
+    z-index: 1000;
+}
+
+.remarks-modal-content {
+    width: min(650px, 90vw);
+    max-height: 80vh;
+
+    background: #1e293b;
+    color: #e2e8f0;
+
+    border-radius: 14px;
+
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+
+    overflow: hidden;
+}
+
+.remarks-modal-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    padding: 14px 18px;
+
+    background: #334155;
+
+    font-size: 16px;
+    font-weight: 600;
+}
+
+.remarks-close-btn {
+    border: none;
+    background: transparent;
+
+    color: #e2e8f0;
+
+    font-size: 24px;
+    line-height: 1;
+
+    cursor: pointer;
+}
+
+.remarks-close-btn:hover {
+    color: #38bdf8;
+}
+
+.remarks-list {
+    padding: 16px;
+
+    max-height: 65vh;
+    overflow-y: auto;
+}
+
+.remark-item {
+    padding: 12px;
+
+    margin-bottom: 10px;
+
+    background: #0f172a;
+
+    border-radius: 8px;
+
+    border: 1px solid #334155;
+}
+
+.remark-meta {
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+
+    margin-bottom: 6px;
+
+    color: #94a3b8;
+
+    font-size: 11px;
+}
+
+.remark-text {
+    color: #e2e8f0;
+
+    font-size: 13px;
+
+    white-space: pre-wrap;
+    word-break: break-word;
+}
+
+.no-remarks {
+    color: #94a3b8;
+    text-align: center;
+    padding: 20px;
+}
+
+/* -------------------------------------------------
+   TRANSACTION HISTORY PREVIEW
+   ------------------------------------------------- */
+
+.email-history-link {
+    color: #38bdf8;
+    text-decoration: underline;
+    cursor: pointer;
+}
+
+.email-history-link:hover {
+    color: #7dd3fc;
+}
+
+.transaction-history-preview {
+    position: fixed;
+    inset: 0;
+
+    display: flex;
+
+    align-items: center;
+    justify-content: center;
+
+    background: rgba(0, 0, 0, 0.55);
+
+    z-index: 2000;
+}
+
+.transaction-history-preview-content {
+    width: min(900px, 90vw);
+    max-height: 80vh;
+
+    background: #1e293b;
+
+    border-radius: 16px;
+
+    box-shadow:
+        0 10px 40px
+        rgba(0, 0, 0, 0.5);
+
+    overflow: hidden;
+}
+
+.transaction-history-header {
+    display: flex;
+
+    align-items: center;
+    justify-content: space-between;
+
+    padding: 14px 18px;
+
+    background: #334155;
+
+    font-weight: 600;
+}
+
+.transaction-history-close {
+    border: none;
+
+    background: transparent;
+
+    color: #e2e8f0;
+
+    font-size: 24px;
+
+    cursor: pointer;
+}
+
+.transaction-history-close:hover {
+    color: #38bdf8;
+}
+
+#transactionHistoryPreviewBody {
+    padding: 16px;
+
+    max-height: 65vh;
+
+    overflow-y: auto;
+}
+
+.transaction-history-table {
+    width: 100%;
+
+    border-collapse: collapse;
+
+    font-size: 13px;
+}
+
+.transaction-history-table th {
+    padding: 10px;
+
+    background: #334155;
+
+    text-align: left;
+
+    white-space: nowrap;
+}
+
+.transaction-history-table td {
+    padding: 10px;
+
+    border-bottom:
+        1px solid #334155;
+}
+
+.transaction-credit {
+    color: #22c55e;
+    font-weight: 600;
+}
+
+.transaction-debit {
+    color: #f87171;
+    font-weight: 600;
+}
+
+.no-transaction-history {
+    text-align: center;
+
+    color: #94a3b8;
+
+    padding: 25px;
+}
+
 </style>
 
 </head>
@@ -880,8 +1149,39 @@ button {
 
     </div>
 
+    <div
+    id="transactionHistoryPreview"
+    class="transaction-history-preview"
+    style="display:none;"
+    onmouseenter="cancelTransactionHistoryPreviewClose()"
+    onmouseleave="scheduleTransactionHistoryPreviewClose()">
+
+    <div class="transaction-history-preview-content">
+
+        <div class="transaction-history-header">
+
+            <span id="transactionHistoryPreviewEmail">
+                Transaction History
+            </span>
+
+            <button
+                class="transaction-history-close"
+                onclick="closeTransactionHistoryPreview()">
+
+                &times;
+
+            </button>
+
+        </div>
+
+        <div id="transactionHistoryPreviewBody">
+        </div>
+
+    </div>
+
 </div>
-```
+
+</div>
 
 </div>
 
@@ -897,6 +1197,9 @@ let sortField = "filedOn";
 
 let sortDirection = "asc";
 
+let userTransactionHistory = [];
+
+let transactionHistoryByEmail = {};
 
 /* =========================================================
    HOME
@@ -1218,7 +1521,7 @@ async function applyFilters() {
 
         const response =
             await fetch(
-                `/query-response?${params.toString()}`,
+                `/query-refunds?${params.toString()}`,
                 {
                     method: "GET",
                     credentials: "include"
@@ -1250,6 +1553,10 @@ async function applyFilters() {
         refunds =
             payload.refunds || [];
 
+        userTransactionHistory =
+            payload.userTransactionHistory || [];
+
+        buildTransactionHistoryIndex();
 
         /*
          * The backend may return
@@ -1424,6 +1731,11 @@ window.onload = function() {
             refunds =
                 payload.refunds || [];
 
+            userTransactionHistory =
+                payload.userTransactionHistory || [];
+
+            buildTransactionHistoryByEmail();
+
             sortRefunds();
 
             renderRefunds();
@@ -1566,6 +1878,10 @@ function renderRefunds() {
                     </th>
 
                     <th>
+                        Remarks
+                    </th>
+
+                    <th>
                         Action
                     </th>
 
@@ -1694,6 +2010,125 @@ function renderRefunds() {
             `;
         }
 
+        /* -------------------------------------------------
+        REMARKS
+        ------------------------------------------------- */
+
+        const refundRemarks = Array.isArray(refund.refundRemarks)
+            ? refund.refundRemarks
+            : [];
+
+        const remarksPopupId =
+            `remarks-${refundId.replace(/[^a-zA-Z0-9_-]/g, "")}`;
+
+        let remarksHtml = `
+            <div class="remarks-cell">
+
+                <a
+                    href="javascript:void(0)"
+                    class="show-remarks-link"
+                    onclick="showRemarks('${remarksPopupId}')">
+
+                    Show Remarks
+
+                </a>
+
+                <textarea
+                    class="new-remark-input"
+                    id="new-remark-${escapeHtml(refundId)}"
+                    placeholder="Add remark..."
+                    rows="2"></textarea>
+
+            </div>
+        `;
+
+        let remarksPopupHtml = `
+            <div
+                id="${remarksPopupId}"
+                class="remarks-modal"
+                style="display:none;">
+
+                <div class="remarks-modal-content">
+
+                    <div class="remarks-modal-header">
+                        <span>Refund Remarks</span>
+
+                        <button
+                            class="remarks-close-btn"
+                            onclick="closeRemarks('${remarksPopupId}')">
+                            &times;
+                        </button>
+                    </div>
+
+                    <div class="remarks-list">
+        `;
+
+        if (refundRemarks.length === 0) {
+
+            remarksPopupHtml += `
+                <div class="no-remarks">
+                    No remarks have been added.
+                </div>
+            `;
+
+        } else {
+
+            refundRemarks.forEach(remark => {
+
+                const timestamp =
+                    remark.remarksAddedTimestamp || "";
+
+                const user =
+                    remark.remarksUser || "";
+
+                const action =
+                    remark.remarksAction || "";
+
+                const text =
+                    remark.remarks || "";
+
+                remarksPopupHtml += `
+                    <div class="remark-item">
+
+                        <div class="remark-meta">
+
+                            <span>
+                                ${escapeHtml(user)}
+                            </span>
+
+                            <span>
+                                ${escapeHtml(action)}
+                            </span>
+
+                            <span>
+                                ${escapeHtml(
+                                    formatRemarkTimestamp(timestamp)
+                                )}
+                            </span>
+
+                        </div>
+
+                        <div class="remark-text">
+                            ${escapeHtml(text)}
+                        </div>
+
+                    </div>
+                `;
+            });
+        }
+
+        remarksPopupHtml += `
+                    </div>
+
+                </div>
+
+            </div>
+        `;
+
+        /* -------------------------------------------------
+        Build table body row
+        ------------------------------------------------- */
+
         html += `
             <tr>
 
@@ -1702,7 +2137,17 @@ function renderRefunds() {
                 </td>
 
                 <td>
-                    ${escapeHtml(email)}
+                    <a
+                        href="javascript:void(0)"
+                        class="email-history-link"
+                        data-email="${escapeHtml(email)}"
+                        onclick="openTransactionHistoryTab('${escapeHtml(email)}')"
+                        onmouseenter="showTransactionHistoryPreview('${escapeHtml(email)}')"
+                        onmouseleave="scheduleTransactionHistoryPreviewClose()">
+
+                        ${escapeHtml(email)}
+
+                    </a>
                 </td>
 
                 <td>
@@ -1763,6 +2208,12 @@ function renderRefunds() {
                               `
                             : ""
                     }
+                </td>
+
+                <td>
+                    ${remarksHtml}
+
+                    ${remarksPopupHtml}
                 </td>
 
                 <td>
@@ -1967,16 +2418,510 @@ function escapeHtml(value) {
    APPROVE, REJECT & CANCEL Refunds
    ========================================================= */
 
-function approveRefund(refundId) {
-    console.log("Approve refund:", refundId);
+async function approveRefund(refundId) {
+
+    const newRemark = getNewRefundRemark(refundId);
+
+    const payload = {
+        refundId: refundId,
+        remark: newRemark
+    };
+
+    // send payload to backend
 }
 
-function rejectRefund(refundId) {
-    console.log("Reject refund:", refundId);
+async function rejectRefund(refundId) {
+
+    const newRemark = getNewRefundRemark(refundId);
+
+    const payload = {
+        refundId: refundId,
+        remark: newRemark
+    };
+
+    // send payload to backend
 }
 
-function cancelRefund(refundId) {
-    console.log("Cancel refund:", refundId);
+async function cancelRefund(refundId) {
+
+    const newRemark = getNewRefundRemark(refundId);
+
+    const payload = {
+        refundId: refundId,
+        remark: newRemark
+    };
+
+    // send payload to backend
+}
+
+/* =========================================================
+   Show/Hide Remarks Modal
+   ========================================================= */
+
+function showRemarks(modalId) {
+
+    const modal = document.getElementById(modalId);
+
+    if (modal) {
+        modal.style.display = "flex";
+    }
+}
+
+function closeRemarks(modalId) {
+
+    const modal = document.getElementById(modalId);
+
+    if (modal) {
+        modal.style.display = "none";
+    }
+}
+
+document.addEventListener("click", function(event) {
+
+    if (event.target.classList.contains("remarks-modal")) {
+        event.target.style.display = "none";
+    }
+
+});
+
+function formatRemarkTimestamp(timestamp) {
+
+    if (!timestamp) {
+        return "";
+    }
+
+    const value = Number(timestamp);
+
+    if (!Number.isFinite(value)) {
+        return String(timestamp);
+    }
+
+    // Handle epoch seconds
+    const date = new Date(
+        value < 10000000000
+            ? value * 1000
+            : value
+    );
+
+    if (Number.isNaN(date.getTime())) {
+        return String(timestamp);
+    }
+
+    return date.toLocaleString();
+}
+
+function getNewRefundRemark(refundId) {
+
+    const input = document.getElementById(
+        `new-remark-${refundId}`
+    );
+
+    if (!input) {
+        return "";
+    }
+
+    return input.value.trim();
+}
+
+/* =========================================================
+   User transaction history
+   ========================================================= */
+
+function buildTransactionHistoryIndex() {
+
+    transactionHistoryByEmail = {};
+
+    userTransactionHistory.forEach(transaction => {
+
+        const email = transaction.email;
+
+        if (!email) {
+            return;
+        }
+
+        if (!transactionHistoryByEmail[email]) {
+            transactionHistoryByEmail[email] = [];
+        }
+
+        transactionHistoryByEmail[email].push(transaction);
+    });
+}
+
+function buildTransactionHistoryTable(email) {
+
+    const transactions =
+        transactionHistoryByEmail[email] || [];
+
+    if (transactions.length === 0) {
+
+        return `
+            <div class="no-transaction-history">
+                No transaction history available.
+            </div>
+        `;
+    }
+
+    // Newest transaction first
+    const sortedTransactions = [...transactions].sort(
+        (a, b) =>
+            Number(b.transactionTimestamp || 0) -
+            Number(a.transactionTimestamp || 0)
+    );
+
+    let html = `
+        <table class="transaction-history-table">
+
+            <thead>
+                <tr>
+
+                    <th>
+                        Date / Time
+                    </th>
+
+                    <th>
+                        Transaction ID
+                    </th>
+
+                    <th>
+                        Type
+                    </th>
+
+                    <th>
+                        Amount
+                    </th>
+
+                    <th>
+                        Status
+                    </th>
+
+                </tr>
+            </thead>
+
+            <tbody>
+    `;
+
+    sortedTransactions.forEach(transaction => {
+
+        const timestamp =
+            transaction.transactionTimestamp;
+
+        const transactionId =
+            transaction.transactionId || "";
+
+        const transactionType =
+            transaction.transactionType || "";
+
+        const transactionAmount =
+            Number(transaction.transactionAmount || 0);
+
+        const transactionStatus =
+            transaction.transactionStatus || "";
+
+        html += `
+            <tr>
+
+                <td>
+                    ${escapeHtml(
+                        formatTransactionTimestamp(timestamp)
+                    )}
+                </td>
+
+                <td>
+                    ${escapeHtml(transactionId)}
+                </td>
+
+                <td>
+                    ${escapeHtml(transactionType)}
+                </td>
+
+                <td class="${
+                    transactionAmount < 0
+                        ? "transaction-debit"
+                        : "transaction-credit"
+                }">
+
+                    ₹${escapeHtml(
+                        formatTransactionAmount(
+                            transactionAmount
+                        )
+                    )}
+
+                </td>
+
+                <td>
+                    ${escapeHtml(transactionStatus)}
+                </td>
+
+            </tr>
+        `;
+    });
+
+    html += `
+            </tbody>
+
+        </table>
+    `;
+
+    return html;
+}
+
+function formatTransactionTimestamp(timestamp) {
+
+    if (timestamp === null ||
+        timestamp === undefined ||
+        timestamp === "") {
+
+        return "";
+    }
+
+    const value = Number(timestamp);
+
+    if (!Number.isFinite(value)) {
+        return String(timestamp);
+    }
+
+    const date = new Date(
+        value < 10000000000
+            ? value * 1000
+            : value
+    );
+
+    if (Number.isNaN(date.getTime())) {
+        return String(timestamp);
+    }
+
+    return date.toLocaleString();
+}
+
+function formatTransactionAmount(amount) {
+
+    return Number(amount).toLocaleString(
+        "en-IN",
+        {
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2
+        }
+    );
+}
+
+let transactionHistoryCloseTimer = null;
+
+function showTransactionHistoryPreview(email) {
+
+    cancelTransactionHistoryPreviewClose();
+
+    const modal =
+        document.getElementById(
+            "transactionHistoryPreview"
+        );
+
+    const emailElement =
+        document.getElementById(
+            "transactionHistoryPreviewEmail"
+        );
+
+    const bodyElement =
+        document.getElementById(
+            "transactionHistoryPreviewBody"
+        );
+
+    if (!modal || !emailElement || !bodyElement) {
+        return;
+    }
+
+    emailElement.textContent =
+        `Transaction History - ${email}`;
+
+    bodyElement.innerHTML =
+        buildTransactionHistoryTable(email);
+
+    modal.style.display = "flex";
+}
+
+function scheduleTransactionHistoryPreviewClose() {
+
+    cancelTransactionHistoryPreviewClose();
+
+    transactionHistoryCloseTimer =
+        setTimeout(() => {
+
+            closeTransactionHistoryPreview();
+
+        }, 250);
+}
+
+function cancelTransactionHistoryPreviewClose() {
+
+    if (transactionHistoryCloseTimer) {
+
+        clearTimeout(
+            transactionHistoryCloseTimer
+        );
+
+        transactionHistoryCloseTimer = null;
+    }
+}
+
+function closeTransactionHistoryPreview() {
+
+    cancelTransactionHistoryPreviewClose();
+
+    const modal =
+        document.getElementById(
+            "transactionHistoryPreview"
+        );
+
+    if (modal) {
+        modal.style.display = "none";
+    }
+}
+
+function openTransactionHistoryTab(email) {
+
+    const transactions =
+        transactionHistoryByEmail[email] || [];
+
+    const transactionTable =
+        buildTransactionHistoryTable(email);
+
+    const newWindow = window.open(
+        "",
+        "_blank"
+    );
+
+    if (!newWindow) {
+
+        alert(
+            "Please allow pop-ups to open transaction history."
+        );
+
+        return;
+    }
+
+    newWindow.document.write(`
+        <!DOCTYPE html>
+
+        <html>
+
+        <head>
+
+            <meta charset="UTF-8">
+
+            <title>
+                Transaction History - ${escapeHtml(email)}
+            </title>
+
+            <style>
+
+                body {
+                    margin: 0;
+                    padding: 24px;
+
+                    background:
+                        radial-gradient(
+                            circle at top,
+                            #064e3b,
+                            #020617
+                        );
+
+                    color: #e2e8f0;
+
+                    font-family:
+                        'Segoe UI',
+                        sans-serif;
+                }
+
+                .transaction-page {
+                    max-width: 1200px;
+                    margin: 0 auto;
+                }
+
+                .transaction-card {
+                    background: #1e293b;
+
+                    border-radius: 16px;
+
+                    padding: 20px;
+
+                    box-shadow:
+                        0 6px 20px
+                        rgba(0,0,0,0.3);
+                }
+
+                h2 {
+                    margin-top: 0;
+                    margin-bottom: 6px;
+                }
+
+                .transaction-email {
+                    color: #94a3b8;
+                    margin-bottom: 20px;
+                }
+
+                .transaction-history-table {
+                    width: 100%;
+                    border-collapse: collapse;
+                }
+
+                .transaction-history-table th {
+                    background: #334155;
+                    color: #e2e8f0;
+                    padding: 10px;
+                    text-align: left;
+                }
+
+                .transaction-history-table td {
+                    padding: 10px;
+                    border-bottom:
+                        1px solid #334155;
+                }
+
+                .transaction-credit {
+                    color: #22c55e;
+                    font-weight: 600;
+                }
+
+                .transaction-debit {
+                    color: #f87171;
+                    font-weight: 600;
+                }
+
+                .no-transaction-history {
+                    padding: 30px;
+                    text-align: center;
+                    color: #94a3b8;
+                }
+
+            </style>
+
+        </head>
+
+        <body>
+
+            <div class="transaction-page">
+
+                <div class="transaction-card">
+
+                    <h2>
+                        Transaction History
+                    </h2>
+
+                    <div class="transaction-email">
+                        ${escapeHtml(email)}
+                    </div>
+
+                    ${transactionTable}
+
+                </div>
+
+            </div>
+
+        </body>
+
+        </html>
+    `);
+
+    newWindow.document.close();
 }
 
 </script>
