@@ -2612,7 +2612,7 @@ function buildTransactionHistoryTable(email) {
             transaction.transactionType || "";
 
         const transactionAmount =
-            Number(transaction.transactionAmount || 0);
+            getDisplayTransactionAmount(transaction);
 
         const transactionStatus =
             transaction.transactionStatus || "";
@@ -2649,7 +2649,9 @@ function buildTransactionHistoryTable(email) {
                 </td>
 
                 <td>
-                    ${escapeHtml(transactionStatus)}
+                    <span class="transaction-status">
+                        ${escapeHtml(transactionStatus)}
+                    </span>
                 </td>
 
             </tr>
@@ -2695,9 +2697,17 @@ function formatTransactionTimestamp(timestamp) {
 
 function formatTransactionAmount(amount) {
 
-    return Number(amount).toLocaleString(
+    const numericAmount = Number(amount);
+
+    if (!Number.isFinite(numericAmount)) {
+        return "₹0.00";
+    }
+
+    return numericAmount.toLocaleString(
         "en-IN",
         {
+            style: "currency",
+            currency: "INR",
             minimumFractionDigits: 2,
             maximumFractionDigits: 2
         }
@@ -2807,15 +2817,25 @@ function openTransactionHistoryTab(email) {
 
             <meta charset="UTF-8">
 
+            <meta
+                name="viewport"
+                content="width=device-width, initial-scale=1.0">
+
             <title>
                 Transaction History - ${escapeHtml(email)}
             </title>
 
+
             <style>
 
+                * {
+                    box-sizing: border-box;
+                }
+
+
                 body {
+
                     margin: 0;
-                    padding: 24px;
 
                     background:
                         radial-gradient(
@@ -2829,90 +2849,287 @@ function openTransactionHistoryTab(email) {
                     font-family:
                         'Segoe UI',
                         sans-serif;
+
+                    min-height: 100vh;
                 }
 
-                .transaction-page {
-                    max-width: 1200px;
-                    margin: 0 auto;
+
+                .container {
+
+                    width: 95%;
+
+                    max-width: 1400px;
+
+                    margin:
+                        0 auto;
+
+                    padding:
+                        20px 0 40px;
                 }
 
-                .transaction-card {
+
+                .logo {
+
+                    display: block;
+
+                    width: 160px;
+
+                    margin:
+                        10px auto 20px;
+                }
+
+
+                .nav-btn {
+
+                    width: 100%;
+
+                    padding: 10px 14px;
+
+                    margin-bottom: 16px;
+
+                    border: none;
+
+                    border-radius: 10px;
+
+                    background: #334155;
+
+                    color: white;
+
+                    font-size: 14px;
+
+                    cursor: pointer;
+                }
+
+
+                .nav-btn:hover {
+
+                    opacity: 0.9;
+                }
+
+
+                .card {
+
                     background: #1e293b;
 
                     border-radius: 16px;
 
-                    padding: 20px;
+                    padding: 16px;
+
+                    margin-bottom: 16px;
 
                     box-shadow:
                         0 6px 20px
                         rgba(0,0,0,0.3);
                 }
 
-                h2 {
-                    margin-top: 0;
+
+                .title {
+
+                    font-size: 20px;
+
+                    font-weight: 600;
+
+                    color: #f8fafc;
+
                     margin-bottom: 6px;
                 }
 
-                .transaction-email {
+
+                .email-subtitle {
+
                     color: #94a3b8;
-                    margin-bottom: 20px;
+
+                    font-size: 14px;
                 }
+
+
+                .transaction-table-container {
+
+                    overflow-x: auto;
+                }
+
 
                 .transaction-history-table {
+
                     width: 100%;
-                    border-collapse: collapse;
+
+                    border-collapse:
+                        collapse;
+
+                    font-size: 13px;
                 }
+
 
                 .transaction-history-table th {
+
+                    padding: 11px;
+
                     background: #334155;
-                    color: #e2e8f0;
-                    padding: 10px;
+
+                    color: #f8fafc;
+
                     text-align: left;
+
+                    white-space: nowrap;
                 }
+
 
                 .transaction-history-table td {
-                    padding: 10px;
+
+                    padding: 11px;
+
                     border-bottom:
                         1px solid #334155;
+
+                    vertical-align: top;
                 }
+
+
+                .transaction-history-table tr:hover {
+
+                    background:
+                        rgba(51,65,85,0.35);
+                }
+
 
                 .transaction-credit {
+
                     color: #22c55e;
+
                     font-weight: 600;
+
+                    white-space: nowrap;
                 }
+
 
                 .transaction-debit {
+
                     color: #f87171;
+
                     font-weight: 600;
+
+                    white-space: nowrap;
                 }
 
+
+                .transaction-status {
+
+                    display: inline-block;
+
+                    padding:
+                        4px 8px;
+
+                    border-radius: 6px;
+
+                    background: #334155;
+
+                    color: #e2e8f0;
+
+                    font-size: 12px;
+                }
+
+
                 .no-transaction-history {
+
                     padding: 30px;
+
                     text-align: center;
+
                     color: #94a3b8;
+                }
+
+
+                @media (max-width: 700px) {
+
+                    .container {
+
+                        width: 100%;
+
+                        padding:
+                            10px 12px 25px;
+                    }
+
+                    .card {
+
+                        padding: 10px;
+                    }
+
+                    .transaction-history-table {
+
+                        font-size: 12px;
+                    }
+
                 }
 
             </style>
 
         </head>
 
+
         <body>
 
-            <div class="transaction-page">
+            <div class="container">
 
-                <div class="transaction-card">
 
-                    <h2>
+                <!-- =================================================
+                     LOGO
+                     ================================================= -->
+
+                <img
+                    src="https://vidyutyatraa.s3.ap-south-1.amazonaws.com/vy_logo_cropped_lite.png"
+                    class="logo"
+                    alt="VidyutYatraa">
+
+
+                <!-- =================================================
+                     HOME / BACK
+                     ================================================= -->
+
+                <button
+                    class="nav-btn"
+                    onclick="window.close()">
+
+                    ← Close Transaction History
+
+                </button>
+
+
+                <!-- =================================================
+                     TITLE
+                     ================================================= -->
+
+                <div class="card">
+
+                    <div class="title">
+
                         Transaction History
-                    </h2>
 
-                    <div class="transaction-email">
-                        ${escapeHtml(email)}
                     </div>
 
-                    ${transactionTable}
+                    <div class="email-subtitle">
+
+                        ${escapeHtml(email)}
+
+                    </div>
 
                 </div>
+
+
+                <!-- =================================================
+                     TRANSACTIONS
+                     ================================================= -->
+
+                <div class="card">
+
+                    <div
+                        class="transaction-table-container">
+
+                        ${transactionTable}
+
+                    </div>
+
+                </div>
+
 
             </div>
 
@@ -2922,6 +3139,52 @@ function openTransactionHistoryTab(email) {
     `);
 
     newWindow.document.close();
+}
+
+function getDisplayTransactionAmount(transaction) {
+
+    const amount = Number(
+        transaction.transactionAmount || 0
+    );
+
+    const type = String(
+        transaction.transactionType || ""
+    ).trim().toLowerCase();
+
+    const status = String(
+        transaction.transactionStatus || ""
+    ).trim().toLowerCase();
+
+    /*
+     * Charging session:
+     * Always multiply the received amount by -1.
+     */
+    if (type === "charging session") {
+        return amount * -1;
+    }
+
+    /*
+     * Refund:
+     * Approved / Processed refunds are wallet debits.
+     *
+     * Always multiply the received amount by -1,
+     * irrespective of its original sign.
+     */
+    if (type === "refund") {
+
+        if (
+            status === "approved" ||
+            status === "settled"
+        ) {
+            return amount * -1;
+        }
+    }
+
+    /*
+     * All other transactions:
+     * Preserve the sign received from the backend.
+     */
+    return amount;
 }
 
 </script>
