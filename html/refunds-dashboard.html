@@ -658,51 +658,87 @@ button {
     inset: 0;
 
     display: flex;
+
     align-items: center;
     justify-content: center;
 
-    background: rgba(0, 0, 0, 0.65);
+    background: rgba(0,0,0,0.55);
 
-    z-index: 1000;
+    z-index: 2000;
 }
 
 .remarks-modal-content {
-    width: min(650px, 90vw);
+    width: min(800px, 90vw);
+
     max-height: 80vh;
 
     background: #1e293b;
-    color: #e2e8f0;
 
-    border-radius: 14px;
+    border-radius: 16px;
 
-    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+    box-shadow:
+        0 10px 40px
+        rgba(0,0,0,0.5);
 
     overflow: hidden;
 }
 
 .remarks-modal-header {
     display: flex;
+
     align-items: center;
+
     justify-content: space-between;
 
     padding: 14px 18px;
 
     background: #334155;
 
-    font-size: 16px;
     font-weight: 600;
+}
+
+.remarks-header-actions {
+    display: flex;
+
+    align-items: center;
+
+    gap: 8px;
+}
+
+.open-remarks-btn {
+    border: none;
+
+    border-radius: 8px;
+
+    padding: 7px 12px;
+
+    background: #38bdf8;
+
+    color: #020617;
+
+    font-size: 12px;
+
+    font-weight: 600;
+
+    cursor: pointer;
+}
+
+.open-remarks-btn:hover {
+    opacity: 0.85;
 }
 
 .remarks-close-btn {
     border: none;
+
     background: transparent;
 
     color: #e2e8f0;
 
     font-size: 24px;
-    line-height: 1;
 
     cursor: pointer;
+
+    line-height: 1;
 }
 
 .remarks-close-btn:hover {
@@ -713,6 +749,7 @@ button {
     padding: 16px;
 
     max-height: 65vh;
+
     overflow-y: auto;
 }
 
@@ -876,6 +913,27 @@ button {
     color: #94a3b8;
 
     padding: 25px;
+}
+
+.transaction-history-preview-actions {
+    display: flex;
+    justify-content: flex-end;
+    margin-bottom: 12px;
+}
+
+.open-history-btn {
+    border: none;
+    border-radius: 8px;
+    padding: 8px 14px;
+    background: #38bdf8;
+    color: #020617;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.open-history-btn:hover {
+    opacity: 0.85;
 }
 
 </style>
@@ -2027,12 +2085,13 @@ function renderRefunds() {
                 <a
                     href="javascript:void(0)"
                     class="show-remarks-link"
-                    onclick="showRemarks('${remarksPopupId}')">
+                    onmouseenter="showRemarks('${remarksPopupId}')"
+                    onmouseleave="scheduleRemarksClose('${remarksPopupId}')">
 
                     Show Remarks
 
                 </a>
-
+                
                 <textarea
                     class="new-remark-input"
                     id="new-remark-${escapeHtml(refundId)}"
@@ -2046,18 +2105,38 @@ function renderRefunds() {
             <div
                 id="${remarksPopupId}"
                 class="remarks-modal"
-                style="display:none;">
+                style="display:none;"
+                onmouseenter="cancelRemarksClose()"
+                onmouseleave="scheduleRemarksClose('${remarksPopupId}')">
 
                 <div class="remarks-modal-content">
 
                     <div class="remarks-modal-header">
-                        <span>Refund Remarks</span>
 
-                        <button
-                            class="remarks-close-btn"
-                            onclick="closeRemarks('${remarksPopupId}')">
-                            &times;
-                        </button>
+                        <span>
+                            Refund Remarks
+                        </span>
+
+                        <div class="remarks-header-actions">
+
+                            <button
+                                class="open-remarks-btn"
+                                onclick="openRemarksHistoryTab('${escapeHtml(refundId)}')">
+
+                                Open in New Tab
+
+                            </button>
+
+                            <button
+                                class="remarks-close-btn"
+                                onclick="closeRemarks('${remarksPopupId}')">
+
+                                &times;
+
+                            </button>
+
+                        </div>
+
                     </div>
 
                     <div class="remarks-list">
@@ -2140,8 +2219,6 @@ function renderRefunds() {
                     <a
                         href="javascript:void(0)"
                         class="email-history-link"
-                        data-email="${escapeHtml(email)}"
-                        onclick="openTransactionHistoryTab('${escapeHtml(email)}')"
                         onmouseenter="showTransactionHistoryPreview('${escapeHtml(email)}')"
                         onmouseleave="scheduleTransactionHistoryPreviewClose()">
 
@@ -2458,31 +2535,537 @@ async function cancelRefund(refundId) {
    Show/Hide Remarks Modal
    ========================================================= */
 
+let remarksCloseTimer = null;
+
 function showRemarks(modalId) {
 
-    const modal = document.getElementById(modalId);
+    cancelRemarksClose();
+
+    const modal =
+        document.getElementById(modalId);
 
     if (modal) {
         modal.style.display = "flex";
     }
 }
 
+
+function scheduleRemarksClose(modalId) {
+
+    cancelRemarksClose();
+
+    remarksCloseTimer = setTimeout(() => {
+
+        closeRemarks(modalId);
+
+    }, 250);
+}
+
+
+function cancelRemarksClose() {
+
+    if (remarksCloseTimer) {
+
+        clearTimeout(remarksCloseTimer);
+
+        remarksCloseTimer = null;
+    }
+}
+
+
 function closeRemarks(modalId) {
 
-    const modal = document.getElementById(modalId);
+    cancelRemarksClose();
+
+    const modal =
+        document.getElementById(modalId);
 
     if (modal) {
         modal.style.display = "none";
     }
 }
 
-document.addEventListener("click", function(event) {
+function openRemarksHistoryTab(refundId) {
 
-    if (event.target.classList.contains("remarks-modal")) {
-        event.target.style.display = "none";
+    const refund =
+        refunds.find(
+            item =>
+                String(item.refundId) ===
+                String(refundId)
+        );
+
+    if (!refund) {
+
+        alert(
+            "Refund details could not be found."
+        );
+
+        return;
     }
 
-});
+    const refundRemarks =
+        Array.isArray(refund.refundRemarks)
+            ? refund.refundRemarks
+            : [];
+
+    const email =
+        refund.email || "";
+
+    const refundAmount =
+        refund.refundAmount ?? "";
+
+    const refundStatus =
+        refund.refundStatus || "";
+
+    const filedOn =
+        refund.filedOn || "";
+
+    const newWindow =
+        window.open(
+            "",
+            "_blank"
+        );
+
+    if (!newWindow) {
+
+        alert(
+            "Please allow pop-ups to open remarks history."
+        );
+
+        return;
+    }
+
+    let remarksTableHtml = "";
+
+    if (refundRemarks.length === 0) {
+
+        remarksTableHtml = `
+            <div class="no-remarks">
+                No remarks available.
+            </div>
+        `;
+
+    } else {
+
+        const sortedRemarks =
+            [...refundRemarks].sort(
+                (a, b) =>
+                    Number(
+                        b.remarksAddedTimestamp || 0
+                    ) -
+                    Number(
+                        a.remarksAddedTimestamp || 0
+                    )
+            );
+
+        remarksTableHtml = `
+            <div class="remarks-table-container">
+
+                <table class="remarks-table">
+
+                    <thead>
+                        <tr>
+                            <th>Date / Time</th>
+                            <th>User</th>
+                            <th>Remarks</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+        `;
+
+        sortedRemarks.forEach(remark => {
+
+            const timestamp =
+                remark.remarksAddedTimestamp || "";
+
+            const user =
+                remark.remarksUser || "";
+
+            const text =
+                remark.remarks || "";
+
+            remarksTableHtml += `
+                <tr>
+
+                    <td>
+                        ${escapeHtml(
+                            formatRemarkTimestamp(
+                                timestamp
+                            )
+                        )}
+                    </td>
+
+                    <td>
+                        ${escapeHtml(user)}
+                    </td>
+
+                    <td class="remark-history-text">
+                        ${escapeHtml(text)}
+                    </td>
+
+                </tr>
+            `;
+        });
+
+        remarksTableHtml += `
+                    </tbody>
+
+                </table>
+
+            </div>
+        `;
+    }
+
+    newWindow.document.write(`
+        <!DOCTYPE html>
+
+        <html>
+
+        <head>
+
+            <meta charset="UTF-8">
+
+            <meta
+                name="viewport"
+                content="width=device-width, initial-scale=1.0">
+
+            <title>
+                Refund Remarks - ${escapeHtml(refundId)}
+            </title>
+
+            <style>
+
+                * {
+                    box-sizing: border-box;
+                }
+
+                body {
+                    margin: 0;
+
+                    background:
+                        radial-gradient(
+                            circle at top,
+                            #064e3b,
+                            #020617
+                        );
+
+                    color: #e2e8f0;
+
+                    font-family:
+                        'Segoe UI',
+                        sans-serif;
+
+                    min-height: 100vh;
+                }
+
+                .container {
+                    width: 95%;
+
+                    max-width: 1200px;
+
+                    margin: 0 auto;
+
+                    padding:
+                        20px 0 40px;
+                }
+
+                .logo {
+                    display: block;
+
+                    width: 160px;
+
+                    margin:
+                        10px auto 20px;
+                }
+
+                .nav-btn {
+                    width: 100%;
+
+                    padding:
+                        10px 14px;
+
+                    margin-bottom: 16px;
+
+                    border: none;
+
+                    border-radius: 10px;
+
+                    background: #334155;
+
+                    color: white;
+
+                    font-size: 14px;
+
+                    cursor: pointer;
+                }
+
+                .nav-btn:hover {
+                    opacity: 0.9;
+                }
+
+                .card {
+                    background: #1e293b;
+
+                    border-radius: 16px;
+
+                    padding: 16px;
+
+                    margin-bottom: 16px;
+
+                    box-shadow:
+                        0 6px 20px
+                        rgba(0,0,0,0.3);
+                }
+
+                .title {
+                    font-size: 20px;
+
+                    font-weight: 600;
+
+                    color: #f8fafc;
+
+                    margin-bottom: 12px;
+                }
+
+                .refund-details {
+                    display: grid;
+
+                    grid-template-columns:
+                        repeat(
+                            auto-fit,
+                            minmax(180px, 1fr)
+                        );
+
+                    gap: 12px;
+                }
+
+                .detail-item {
+                    background: #334155;
+
+                    border-radius: 10px;
+
+                    padding: 10px 12px;
+                }
+
+                .detail-label {
+                    font-size: 11px;
+
+                    color: #94a3b8;
+
+                    margin-bottom: 4px;
+                }
+
+                .detail-value {
+                    font-size: 14px;
+
+                    color: #f8fafc;
+
+                    word-break: break-word;
+                }
+
+                .remarks-table-container {
+                    overflow-x: auto;
+                }
+
+                .remarks-table {
+                    width: 100%;
+
+                    border-collapse:
+                        collapse;
+
+                    font-size: 13px;
+                }
+
+                .remarks-table th {
+                    padding: 11px;
+
+                    background: #334155;
+
+                    color: #f8fafc;
+
+                    text-align: left;
+
+                    white-space: nowrap;
+                }
+
+                .remarks-table td {
+                    padding: 11px;
+
+                    border-bottom:
+                        1px solid #334155;
+
+                    vertical-align: top;
+                }
+
+                .remarks-table tr:hover {
+                    background:
+                        rgba(
+                            51,
+                            65,
+                            85,
+                            0.35
+                        );
+                }
+
+                .remark-history-text {
+                    white-space: pre-wrap;
+
+                    word-break: break-word;
+                }
+
+                .no-remarks {
+                    padding: 30px;
+
+                    text-align: center;
+
+                    color: #94a3b8;
+                }
+
+                @media (max-width: 700px) {
+
+                    .container {
+                        width: 100%;
+
+                        padding:
+                            10px 12px 25px;
+                    }
+
+                    .card {
+                        padding: 10px;
+                    }
+
+                    .remarks-table {
+                        font-size: 12px;
+                    }
+
+                }
+
+            </style>
+
+        </head>
+
+        <body>
+
+            <div class="container">
+
+                <img
+                    src="https://vidyutyatraa.s3.ap-south-1.amazonaws.com/vy_logo_cropped_lite.png"
+                    class="logo"
+                    alt="VidyutYatraa">
+
+                <button
+                    class="nav-btn"
+                    onclick="window.close()">
+
+                    ← Close Remarks History
+
+                </button>
+
+                <div class="card">
+
+                    <div class="title">
+                        Refund Remarks
+                    </div>
+
+                    <div class="refund-details">
+
+                        <div class="detail-item">
+
+                            <div class="detail-label">
+                                Refund ID
+                            </div>
+
+                            <div class="detail-value">
+                                ${escapeHtml(refundId)}
+                            </div>
+
+                        </div>
+
+                        <div class="detail-item">
+
+                            <div class="detail-label">
+                                Email
+                            </div>
+
+                            <div class="detail-value">
+                                ${escapeHtml(email)}
+                            </div>
+
+                        </div>
+
+                        <div class="detail-item">
+
+                            <div class="detail-label">
+                                Refund Amount
+                            </div>
+
+                            <div class="detail-value">
+                                ₹${escapeHtml(
+                                    Number(refundAmount || 0)
+                                        .toLocaleString(
+                                            "en-IN",
+                                            {
+                                                minimumFractionDigits: 2,
+                                                maximumFractionDigits: 2
+                                            }
+                                        )
+                                )}
+                            </div>
+
+                        </div>
+
+                        <div class="detail-item">
+
+                            <div class="detail-label">
+                                Status
+                            </div>
+
+                            <div class="detail-value">
+                                ${escapeHtml(refundStatus)}
+                            </div>
+
+                        </div>
+
+                        <div class="detail-item">
+
+                            <div class="detail-label">
+                                Filed On
+                            </div>
+
+                            <div class="detail-value">
+                                ${escapeHtml(
+                                    formatRemarkTimestamp(
+                                        filedOn
+                                    )
+                                )}
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+                <div class="card">
+
+                    <div class="title">
+                        Remarks History
+                    </div>
+
+                    ${remarksTableHtml}
+
+                </div>
+
+            </div>
+
+        </body>
+
+        </html>
+    `);
+
+    newWindow.document.close();
+}
 
 function formatRemarkTimestamp(timestamp) {
 
@@ -2735,15 +3318,26 @@ function showTransactionHistoryPreview(email) {
             "transactionHistoryPreviewBody"
         );
 
-    if (!modal || !emailElement || !bodyElement) {
-        return;
-    }
+    if (!modal || !emailElement || !bodyElement) return;
 
     emailElement.textContent =
         `Transaction History - ${email}`;
 
-    bodyElement.innerHTML =
-        buildTransactionHistoryTable(email);
+    bodyElement.innerHTML = `
+        <div class="transaction-history-preview-actions">
+
+            <button
+                class="open-history-btn"
+                onclick="openTransactionHistoryTab('${escapeHtml(email)}')">
+
+                Open in New Tab
+
+            </button>
+
+        </div>
+
+        ${buildTransactionHistoryTable(email)}
+    `;
 
     modal.style.display = "flex";
 }
