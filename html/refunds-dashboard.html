@@ -1734,7 +1734,7 @@ window.onload = function() {
             userTransactionHistory =
                 payload.userTransactionHistory || [];
 
-            buildTransactionHistoryByEmail();
+            buildTransactionHistoryIndex();
 
             sortRefunds();
 
@@ -3165,7 +3165,7 @@ function getDisplayTransactionAmount(transaction) {
 
     /*
      * Refund:
-     * Approved / Processed refunds are wallet debits.
+     * Approved / Settled refunds are wallet debits.
      *
      * Always multiply the received amount by -1,
      * irrespective of its original sign.
